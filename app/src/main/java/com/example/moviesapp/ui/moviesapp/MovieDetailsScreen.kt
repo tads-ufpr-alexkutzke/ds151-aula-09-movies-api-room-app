@@ -8,27 +8,28 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.moviesapp.model.Movie
+import com.example.moviesapp.model.fourMovies
 import com.example.moviesapp.ui.theme.MoviesAppTheme
 
 @Composable
 fun MovieDetailsScreen(
     movieId: Int,
-    moviesAppViewModel: MoviesAppViewModel = viewModel(),
-    movieDetailsScreenUiState: MovieDetailsScreenUiState,
+    movieDetailsViewModel: MovieDetailsViewModel = viewModel(),
     onGoBackClick: () -> Unit = {},
 ){
-    when(movieDetailsScreenUiState){
-        is MovieDetailsScreenUiState.Success -> {
-            MovieDetailsScreen(movie = movieDetailsScreenUiState.movie)
-        }
-        is MovieDetailsScreenUiState.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
-        is MovieDetailsScreenUiState.Error -> ErrorScreen( modifier = Modifier.fillMaxSize())
-    }
+    val movieDetailsUiState = movieDetailsViewModel.movieDetailsUiState.collectAsState()
 
     LaunchedEffect(movieId) {
-        moviesAppViewModel.getMovie(movieId)
+        movieDetailsViewModel.getMovie(movieId)
     }
 
+    if(movieDetailsUiState.value.movie == null){
+        ErrorScreen( modifier = Modifier.fillMaxSize())
+    }
+    else{
+        MovieDetailsScreen(movie = movieDetailsUiState.value.movie!!)
+    }
 }
 
 @Composable
@@ -42,10 +43,10 @@ fun MovieDetailsScreen(
 
 @Preview
 @Composable
-fun MovieDetailsScreenPreview(){
+fun MovieDetailsScreenPreview() {
     MoviesAppTheme {
-       MovieDetailsScreen(
-           movie = fourMovies[0]
-       )
+        MovieDetailsScreen(
+            movie = fourMovies[0]
+        )
     }
 }

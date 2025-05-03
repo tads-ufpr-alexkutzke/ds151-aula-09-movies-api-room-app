@@ -1,6 +1,6 @@
 package com.example.moviesapp.network
 
-import com.example.moviesapp.ui.moviesapp.Movie
+import com.example.moviesapp.model.Movie
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
