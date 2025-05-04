@@ -1,15 +1,18 @@
 package com.example.moviesapp.ui.moviesapp
 
+import android.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -41,7 +44,9 @@ import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePreviewHandler
 import coil3.compose.LocalAsyncImagePreviewHandler
 import com.example.moviesapp.model.Movie
+import com.example.moviesapp.model.Review
 import com.example.moviesapp.model.fourMovies
+import com.example.moviesapp.model.fourReviews
 import com.example.moviesapp.ui.theme.MoviesAppTheme
 
 @Composable
@@ -50,24 +55,34 @@ fun MovieDetailsScreen(
     movieDetailsViewModel: MovieDetailsViewModel = viewModel(),
     onGoBackClick: () -> Unit = {},
 ){
-    val movieDetailsUiState = movieDetailsViewModel.movieDetailsUiState.collectAsState()
+    val movieDetailsUiState = movieDetailsViewModel.movieDetailsUiState
 
     LaunchedEffect(movieId) {
         movieDetailsViewModel.getMovie(movieId)
     }
 
-    if(movieDetailsUiState.value.movie == null){
-        ErrorScreen( modifier = Modifier.fillMaxSize())
+    when(movieDetailsUiState){
+        is MovieDetailsUiState.Success ->{
+            MovieDetailsScreen(movie = movieDetailsUiState.movie!!, reviews = movieDetailsUiState.reviews)
+        }
+        is MovieDetailsUiState.SuccessButNoReviews ->{
+            MovieDetailsScreen(movie = movieDetailsUiState.movie!!, reviews = null)
+        }
+        is MovieDetailsUiState.Loading ->{
+            LoadingScreen(modifier = Modifier.fillMaxSize())
+        }
+        is MovieDetailsUiState.Error ->{
+            ErrorScreen(modifier = Modifier.fillMaxSize())
+        }
     }
-    else{
-        MovieDetailsScreen(movie = movieDetailsUiState.value.movie!!)
-    }
+
 }
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 fun MovieDetailsScreen(
     movie: Movie = fourMovies[0],
+    reviews: List<Review>? = fourReviews,
     onGoBackClick: () -> Unit = {},
 ){
     val scrollState = rememberLazyListState()
@@ -90,7 +105,7 @@ fun MovieDetailsScreen(
             state = scrollState,
             contentPadding = PaddingValues(top = maxHeight),
         ) {
-            items(5) {
+            item() {
                 Column(modifier = Modifier
                     .padding(horizontal = 20.dp)
                 ) {
@@ -103,6 +118,33 @@ fun MovieDetailsScreen(
                     Spacer(modifier = Modifier.size(20.dp))
                     Text(text="Elenco", style = MaterialTheme.typography.titleLarge)
                     Text(text = movie.cast.toString())
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 10.dp, vertical = 25.dp))
+                    Text(text = "Reviews", style = MaterialTheme.typography.titleLarge)
+                    Spacer(modifier = Modifier.height(25.dp))
+                }
+            }
+            item() {
+                Column(modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                ) {
+                    if(reviews == null){
+                        ErrorScreen(modifier = Modifier.fillMaxSize())
+                    }
+                    else if(reviews.isEmpty()){
+                        Text(text= "Nenhum review :(")
+                    }
+                    else {
+                        reviews.forEach { review ->
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(text = review.author, modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+                                Text(text = "${review.rating} / 10")
+
+                            }
+                            Text(text = review.reviewText)
+                            Spacer(modifier = Modifier.height(25.dp))
+                        }
+                        
+                    }
                 }
             }
         }
