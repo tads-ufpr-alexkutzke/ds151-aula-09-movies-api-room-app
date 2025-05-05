@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -19,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.TopAppBar
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,9 +35,9 @@ import com.example.moviesapp.ui.moviesapp.MovieDetailsScreen
 import com.example.moviesapp.ui.moviesapp.MoviesScreen
 import com.example.moviesapp.ui.theme.MoviesAppTheme
 
-sealed class BottomNavScreen(val route: String, val label: String, val icon: Int) {
-    object MovieList : BottomNavScreen("movie_list", "Filmes", android.R.drawable.ic_menu_agenda)
-    object Favorites : BottomNavScreen("favorites", "Favoritos", android.R.drawable.star_on)
+sealed class BottomNavScreen(val route: String, val label: String, val icon: ImageVector) {
+    object MovieList : BottomNavScreen("movie_list", "Filmes", Icons.Filled.List)
+    object Favorites : BottomNavScreen("favorites", "Favoritos", Icons.Filled.Favorite)
     companion object { val values = listOf(MovieList, Favorites) }
 }
 
@@ -76,7 +79,7 @@ fun MoviesApp() {
             NavigationBar {
                 BottomNavScreen.values.forEach { screen ->
                     NavigationBarItem(
-                        icon = { Icon(painterResource(id = screen.icon), contentDescription = screen.label) },
+                        icon = { Icon(screen.icon, contentDescription = screen.label) },
                         label = { Text(screen.label) },
                         selected = (currentRoute == screen.route),
                         onClick = {
