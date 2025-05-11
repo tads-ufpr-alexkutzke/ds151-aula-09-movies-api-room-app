@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.ColorImage
 import coil3.annotation.ExperimentalCoilApi
@@ -52,7 +53,7 @@ import com.example.moviesapp.ui.theme.MoviesAppTheme
 @Composable
 fun MovieDetailsScreen(
     movieId: Int,
-    movieDetailsViewModel: MovieDetailsViewModel = viewModel(),
+    movieDetailsViewModel: MovieDetailsViewModel = hiltViewModel(),
     onGoBackClick: () -> Unit = {},
 ){
     val movieDetailsUiState = movieDetailsViewModel.movieDetailsUiState

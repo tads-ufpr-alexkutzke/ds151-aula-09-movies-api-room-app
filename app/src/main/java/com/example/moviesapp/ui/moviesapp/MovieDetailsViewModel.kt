@@ -5,16 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.moviesapp.AppContextHolder
-import com.example.moviesapp.data.LocalFavoriteMoviesRepositoryProvider
-import com.example.moviesapp.data.RemoteMoviesRepositoryProvider
+import com.example.moviesapp.data.LocalFavoriteMoviesRepository
+import com.example.moviesapp.data.RemoteMoviesRepository
 import com.example.moviesapp.model.Movie
 import com.example.moviesapp.model.Review
 import com.example.moviesapp.utils.toMovie
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import okio.IOException
+import javax.inject.Inject
 
 sealed interface MovieDetailsUiState {
     class Success(val movie: Movie?, val reviews: List<Review>): MovieDetailsUiState
@@ -23,9 +22,11 @@ sealed interface MovieDetailsUiState {
     object Loading: MovieDetailsUiState
 }
 
-class MovieDetailsViewModel(): ViewModel() {
-    private val remoteRepository = RemoteMoviesRepositoryProvider.repository
-    private val localRepository = LocalFavoriteMoviesRepositoryProvider.getRepository(AppContextHolder.appContext)
+@HiltViewModel
+class MovieDetailsViewModel @Inject constructor(
+    private val remoteRepository: RemoteMoviesRepository,
+    private val localRepository: LocalFavoriteMoviesRepository
+) : ViewModel() {
     var movieDetailsUiState: MovieDetailsUiState by mutableStateOf(MovieDetailsUiState.Loading)
 
     fun getMovie(movieId:Int){
