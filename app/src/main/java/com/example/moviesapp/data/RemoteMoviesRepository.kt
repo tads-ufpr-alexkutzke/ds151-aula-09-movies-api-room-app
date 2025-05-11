@@ -3,8 +3,11 @@ package com.example.moviesapp.data
 import com.example.moviesapp.network.MoviesApiService
 import com.example.moviesapp.model.Movie
 import com.example.moviesapp.model.Review
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class RemoteMoviesRepository(
+@Singleton
+class RemoteMoviesRepository @Inject constructor(
     private val apiService: MoviesApiService
 ) {
     suspend fun getMovies(): List<Movie> {

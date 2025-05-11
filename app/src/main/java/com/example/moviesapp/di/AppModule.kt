@@ -1,7 +1,6 @@
 package com.example.moviesapp.di
 
 import android.content.Context
-import com.example.moviesapp.data.LocalFavoriteMoviesRepository
 import com.example.moviesapp.data.RemoteMoviesRepository
 import com.example.moviesapp.data.local.FavoriteMovieDao
 import com.example.moviesapp.data.local.FavoriteMoviesDatabase
@@ -44,11 +43,5 @@ object AppModule {
     @Provides
     fun provideFavoriteMovieDao(database: FavoriteMoviesDatabase): FavoriteMovieDao {
         return database.favoriteMovieDao()
-    }
-
-    @Provides
-    @Singleton
-    fun provideLocalFavoriteMoviesRepository(favoriteMovieDao: FavoriteMovieDao): LocalFavoriteMoviesRepository {
-        return LocalFavoriteMoviesRepository(favoriteMovieDao)
     }
 }
